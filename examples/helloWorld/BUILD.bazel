@@ -1,0 +1,7 @@
+load("@rules_kustomize//kustomize:defs.bzl", "kustomize_build")
+
+kustomize_build(
+    name = "testing",
+    srcs = glob(["*.yaml"], exclude=["kustomization.yaml"]),
+    kustomize = ":kustomization.yaml",
+)

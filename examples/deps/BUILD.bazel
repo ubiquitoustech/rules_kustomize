@@ -1,0 +1,19 @@
+load("@rules_kustomize//kustomize:defs.bzl", "kustomize_build")
+load(":defs.bzl", "foo_binary")
+
+foo_binary(name = "configMaptest.yaml")
+
+kustomize_build(
+    name = "depstest",
+    srcs = ["deployment.yaml", "service.yaml"],
+    kustomize = ":kustomization.yml",
+    deps = [":configMaptest.yaml"],
+)
+
+
+
+kustomize_build(
+    name = "original",
+    srcs = ["deployment.yaml", "service.yaml", "configMap.yaml"],
+    kustomize = ":kustomization.yaml",
+)
