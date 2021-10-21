@@ -1,19 +1,40 @@
 load("@rules_kustomize//kustomize:defs.bzl", "kustomize_build")
-load(":defs.bzl", "foo_binary")
+load(":defs.bzl", "configmap_create", "deployment_create", "service_create")
 
-foo_binary(name = "configMaptest.yaml")
+configmap_create(name = "configMaptest_gen.yaml")
 
+deployment_create(name = "deployment_gen.yaml")
+
+service_create(name = "service_gen.yaml")
+
+# adding _gen to the end is not required here it is just to allow for different file names so there aren't conflicts
+# between src files and generated files
 kustomize_build(
     name = "depstest",
-    srcs = ["deployment.yaml", "service.yaml"],
+    srcs = [],
     kustomize = ":kustomization.yml",
-    deps = [":configMaptest.yaml"],
+    deps = [
+        "service_gen.yaml",
+        ":configMaptest_gen.yaml",
+        ":deployment_gen.yaml",
+    ],
 )
 
-
+# the input files and the deps cannot have the same name they need to be different
+# ex: service.yaml cannot be generated and also a be source file in the same build file
+# kustomize_build(
+#     name = "depstest2",
+#     srcs = ["service.yaml"],
+#     kustomize = ":kustomization.yml",
+#     deps = [":configMaptest.yaml", ":deployment.yaml"],
+# )
 
 kustomize_build(
     name = "original",
-    srcs = ["deployment.yaml", "service.yaml", "configMap.yaml"],
+    srcs = [
+        "configMap.yaml",
+        "deployment.yaml",
+        "service.yaml",
+    ],
     kustomize = ":kustomization.yaml",
 )

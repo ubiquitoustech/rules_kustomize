@@ -2,14 +2,16 @@
 kustomize actions
 """
 
-def kustomize_build_action(ctx, srcs, out):
-    """Run a production build of the vite project
+def kustomize_build_action(ctx, srcs, deps, dir, out):
+    """Run a build of the kustomize
 
     Args:
         ctx: arguments description, can be
         multiline with additional indentation.
         srcs: source files
         out: output directory
+        deps: dependencies
+        dir: directory to run kustomize from
     """
 
     # setup the args passed to kustomize
@@ -17,7 +19,7 @@ def kustomize_build_action(ctx, srcs, out):
 
     launcher_args.add_all([
         "build",
-        ctx.file.kustomize.dirname,
+        dir,
         "-o",
         out,
         "--load-restrictor=LoadRestrictionsNone",
@@ -29,7 +31,6 @@ def kustomize_build_action(ctx, srcs, out):
     execution_requirements = {}
     if "no-remote-exec" in ctx.attr.tags:
         execution_requirements = {"no-remote-exec": "1"}
-
 
     ctx.actions.run(
         outputs = outputs,

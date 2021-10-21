@@ -9,6 +9,6 @@ commonLabels:
   app: hello
 
 resources:
-- deployment.yaml
-- service.yaml
-- configMaptest.yaml
+  - deployment_gen.yaml
+  - service_gen.yaml
+  - configMaptest_gen.yaml
