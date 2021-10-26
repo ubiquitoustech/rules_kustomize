@@ -35,7 +35,7 @@ def kustomize_build_action(ctx, srcs, deps, dir, out):
     ctx.actions.run(
         outputs = outputs,
         inputs = srcs,
-        executable = ctx.executable._kustomize,
+        executable = ctx.toolchains["@ubiquitous_tech_rules_kustomize//kustomize:toolchain_type"].kustomizeinfo.target_tool_path,
         arguments = [launcher_args],
         mnemonic = "Kustomize",
     )

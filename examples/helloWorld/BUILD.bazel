@@ -1,4 +1,4 @@
-load("@rules_kustomize//kustomize:defs.bzl", "kustomize_build")
+load("@ubiquitous_tech_rules_kustomize//kustomize:defs.bzl", "kustomize_build")
 
 kustomize_build(
     name = "testing",

@@ -1,4 +1,4 @@
-load("@rules_kustomize//kustomize:defs.bzl", "kustomize_build")
+load("@ubiquitous_tech_rules_kustomize//kustomize:defs.bzl", "kustomize_build")
 load(":defs.bzl", "configmap_create", "deployment_create", "service_create")
 
 configmap_create(name = "configMaptest_gen.yaml")

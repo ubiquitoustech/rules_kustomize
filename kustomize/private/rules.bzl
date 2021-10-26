@@ -34,6 +34,9 @@ def _kustomize_build_impl(ctx):
 
     inputs.append(symtest)
 
+    for file in ctx.toolchains["@ubiquitous_tech_rules_kustomize//kustomize:toolchain_type"].kustomizeinfo.tool_files:
+        inputs.append(file)
+
     main_archive = ctx.actions.declare_file(ctx.label.name + ".yaml")
 
     outputlen = len(main_archive.path) - len(main_archive.dirname)
@@ -74,12 +77,7 @@ kustomize_build = rule(
         #     allow_files = True,
         #     doc = "Data files available to binaries using this library",
         # ),
-        "_kustomize": attr.label(
-            doc = "An executable target that runs kustomize",
-            default = Label("@kubernetes-sigs_kustomize//:kustomize-file"),
-            executable = True,
-            cfg = "host",
-        ),
     },
+    toolchains = ["@ubiquitous_tech_rules_kustomize//kustomize:toolchain_type"],
     doc = "runs kustomize and generates the an output file",
 )
