@@ -24,6 +24,14 @@ def rules_kustomize_dependencies():
         ],
     )
 
+    maybe(
+        http_archive,
+        name = "aspect_bazel_lib",
+        sha256 = "82e80cd47a5c2127ca0d717b7270fa833996c24dce389999c9d67e6c3eeb92e3",
+        strip_prefix = "bazel-lib-0.11.10",
+        url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v0.11.10.tar.gz",
+    )
+
 _DOC = "TODO"
 _ATTRS = {
     "kustomize_version": attr.string(mandatory = True, values = TOOL_VERSIONS.keys()),

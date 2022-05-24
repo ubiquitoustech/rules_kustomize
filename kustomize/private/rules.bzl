@@ -3,6 +3,7 @@ kustomize rules
 """
 
 load(":actions.bzl", "kustomize_build_action")
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
 
 def _kustomize_build_impl(ctx):
     deps_depsets = []
@@ -14,25 +15,7 @@ def _kustomize_build_impl(ctx):
     deps_inputs = depset(transitive = deps_depsets).to_list()
 
     inputs = deps_inputs
-
-    diff = len(ctx.file.kustomize.path) - len(ctx.file.kustomize.basename)
-
-    for src in ctx.files.srcs:
-        place = src.path[diff:]
-        symtest = ctx.actions.declare_symlink(place)
-
-        ctx.actions.symlink(output = symtest, target_path = src.path)
-
-        inputs.append(symtest)
-
-    # add kustomize file to the symlinks as well
-    place = ctx.file.kustomize.path[diff:]
-
-    symtest = ctx.actions.declare_symlink(place)
-
-    ctx.actions.symlink(output = symtest, target_path = ctx.file.kustomize.path)
-
-    inputs.append(symtest)
+    inputs += ctx.files.srcs
 
     for file in ctx.toolchains["@ubiquitous_tech_rules_kustomize//kustomize:toolchain_type"].kustomizeinfo.tool_files:
         inputs.append(file)
@@ -56,7 +39,7 @@ def _kustomize_build_impl(ctx):
         runfiles = ctx.runfiles(collect_data = True),
     )]
 
-kustomize_build = rule(
+_internal_kustomize_build = rule(
     _kustomize_build_impl,
     attrs = {
         "srcs": attr.label_list(
@@ -81,3 +64,23 @@ kustomize_build = rule(
     toolchains = ["@ubiquitous_tech_rules_kustomize//kustomize:toolchain_type"],
     doc = "runs kustomize and generates the an output file",
 )
+
+def kustomize_build(
+        name,
+        kustomize,
+        srcs = [],
+        deps = []):
+    copy_to_bin_name = "%s_copy_srcs_to_bin" % name
+    _copy_to_bin(
+        name = copy_to_bin_name,
+        srcs = srcs,
+        # tags = kwargs.get("tags"),
+    )
+    extra_srcs = [":%s" % copy_to_bin_name]
+
+    _internal_kustomize_build(
+        name = name,
+        srcs = srcs + extra_srcs,
+        deps = deps,
+        kustomize = kustomize,
+    )
